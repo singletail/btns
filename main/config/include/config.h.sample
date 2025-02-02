@@ -1,0 +1,43 @@
+#ifndef _CONFIG_H
+#define _CONFIG_H
+
+// Copy this file to config.h and modify the values below.
+// Do not commit config.h to the repository.
+
+// Configuration group
+
+#define _GROUP
+
+// Device IDs for HomeAssistant, etc.
+
+#define DEVICE_ID "device-id"
+#define DEVICE_NAME "device-name"
+#define DEVICE_MODEL "device-model"
+
+// Device information
+
+#define DEVICE_MANUFACTURER "Espressif"
+#define DEVICE_SW_VERSION "1.0.0"
+#define DEVICE_HW_VERSION "1.0.0"
+
+// WiFi configuration
+
+#define WIFI_SSID "wifi-ssid"
+#define WIFI_PASS "wifi-pass"
+#define WIFI_AUTHMODE WIFI_AUTH_WPA2_PSK
+
+// MQTT configuration
+
+#define MQTT_BROKER "mqtt-broker"
+#define MQTT_URI "mqtt://mqtt-broker:1883"
+#define MQTT_USER "mqtt-user"
+#define MQTT_PASS "mqtt-pass"
+#define MQTT_PORT 1883
+#define MQTT_TOPIC "mqtt-topic"
+
+// NTP configuration
+
+#define NTP_SERVER "ntp-server"
+#define TIME_ZONE "time-zone"
+
+#endif

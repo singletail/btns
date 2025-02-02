@@ -1,0 +1,36 @@
+
+# Credentials
+main/config/include/config.h
+
+# Personal
+docs/ideas
+docs/inventory
+
+# PDFs
+*.pdf
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/c_cpp_properties.json
+.cursorrules
+
+# ESP-IDF
+build/
+dependencies.lock
+sdkconfig
+sdkconfig.old
+sdkconfig.defaults_backup
+
+# Licensed
+components/BME68x
+components/bsec2
+
+# OS
+
+.DS_Store
+
+# Submodules
+components/BME68x
+components/bsec2

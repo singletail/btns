@@ -1,0 +1,41 @@
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+idf_component_register(
+    SRCS
+        "main.c"
+        "config/src/device.c"
+        "config/src/init.c"
+        "core/src/timex.c"
+        "core/src/bits.c"
+        "core/src/broker.c"
+        "core/src/ha.c"
+        "core/src/log.c"
+        "core/src/ctrl_net.c"
+        "core/src/net_evt.c"
+        "core/src/nvs.c"
+        "core/src/pin.c"
+        "core/src/sensor.c"
+        "core/src/sym.c"
+        "core/src/tick.c"
+        "device/src/mmwave.c"
+        "device/src/seg7.c"
+        "led/src/strip.c"
+        "led/src/encoder.c"
+    INCLUDE_DIRS
+        "config/include"
+        "core/include"
+        "device/include"
+        "led/include"
+    REQUIRES
+        esp_driver_gpio
+        mqtt
+        esp_netif
+        esp_wifi
+        lwip
+        mqtt
+        nvs_flash
+        esp_driver_rmt
+        esp_driver_uart
+        console
+
+)

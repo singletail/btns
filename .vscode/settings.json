@@ -1,0 +1,18 @@
+{
+    "idf.openOcdConfigs": [
+        "board/esp32s3-builtin.cfg"
+    ],
+    "idf.espIdfPath": "/Users/singletail/dev/esp/v5.4",
+    "idf.toolsPath": "/Users/singletail/dev/esp/tools",
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/main/config/**",
+        "${workspaceFolder}/main/core/include/**",
+        "${workspaceFolder}/main/device/include/**",
+        "${workspaceFolder}/main/led/include/**",
+        "${workspaceFolder}/main/mod/include/**"
+    ],
+    "C_Cpp.default.compileCommands": "${workspaceFolder}/build/compile_commands.json",
+    "idf.port": "/dev/tty.usbmodem101",
+    "C_Cpp.default.compilerPath": "/Users/singletail/dev/esp/tools/tools/xtensa-esp-elf/esp-14.2.0_20241119/xtensa-esp-elf/bin/xtensa-esp-elf-g++",
+    "C_Cpp.dimInactiveRegions": true,
+}

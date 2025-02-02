@@ -1,0 +1,31 @@
+{
+    "env": {
+        "myIncludePath": [
+            "${workspaceFolder}/main/config/include",
+            "${workspaceFolder}/main/core/include",
+            "${workspaceFolder}/main/device/include",
+            "${workspaceFolder}/main/led/include"
+        ]
+    },
+    "configurations": [
+        {
+            "name": "esp32s3",
+            "compilerPath": "/Users/singletail/dev/esp/tools/tools/esp-clang/esp-18.1.2_20240912/esp-clang/bin/clang",
+            "compileCommands": [
+                "${workspaceFolder}/build/compile_commands.json"
+            ],
+            "intelliSenseMode": "macos-gcc-arm64",
+            "cStandard": "c99",
+            "includePath": [
+                "${env:myIncludePath}",
+                "${config:idf.espIdfPath}/components/**"
+            ],
+            "defines": [
+                "ESP_PLATFORM"
+            ],
+            "mergeConfigurations": false
+        }
+    ],
+    "version": 4,
+    "enableConfigurationSquiggles": true
+}
