@@ -52,5 +52,7 @@ void strip_test_task(void *arg);
 void strip_cycle_task(void *arg);
 void strip_wave_task(void *arg);
 void strip_chase_task(void *arg);
+void strip_color_task(void *arg);
+void strip_rainbow_task(void *arg);
 
-#endif
+#endif  

@@ -204,7 +204,145 @@ void strip_cycle_task(void *arg) {
             // perf_stop(&perf);
             // seg7_clear(led);
             // seg7_display_number(led, (int)perf.fps);
-            vTaskDelay(50 / portTICK_PERIOD_MS);
+            vTaskDelay(10 / portTICK_PERIOD_MS);
+        }
+}
+
+void strip_color_task(void *arg) {
+    LOG("strip_color_task()");
+    strip_t *strip = (strip_t *)arg;
+
+    int r = 255;
+    int g = 0;
+    int b = 0;
+
+    int grad = 64;
+    int temp = 0;
+    int max = LED_LENGTH_1;
+
+        while (true) {
+
+            for (int i = 0; i < max; i++) {
+                r = 0;
+                g = 0;
+                b = 0;
+
+                // red
+                if (i < (max/2) - (grad/2)) {
+                    // First half: r=255
+                    r = 255;
+                } else if (i < (max/2) + (grad/2)) {
+                    // Transition to fourth sixth (255 to 0)
+                    temp = i - ((max/2) - (grad/2));
+                    r = 255 - ((temp * 255) / grad);
+                } else if (i < (5*max/6) - (grad/2)) {
+                    // Fourth and fifth sixth: r=0
+                    r = 0;
+                } else if (i < (5*max/6) + (grad/2)) {
+                    // Transition to sixth sixth (0 to 255)
+                    temp = i - ((5*max/6) - (grad/2));
+                    r = (temp * 255) / grad;
+                } else {
+                    // Sixth sixth: r=255
+                    r = 255;
+                }
+
+                if (i < (max/6) - (grad/2)) {
+                    // First sixth: g=0
+                    g = 0;
+                } else if (i < (max/6) + (grad/2)) {
+                    // Transition to second sixth (0 to 128)
+                    temp = i - ((max/6) - (grad/2));
+                    g = (temp * 128) / grad;
+                } else if (i < (max/3) - (grad/2)) {
+                    // Second sixth: g=128
+                    g = 128;
+                } else if (i < (max/3) + (grad/2)) {
+                    // Transition to third sixth (128 to 255)
+                    temp = i - ((max/3) - (grad/2));
+                    g = 128 + ((temp * 127) / grad);
+                } else if (i < (max/2) - (grad/2)) {
+                    // Third sixth: g=255
+                    g = 255;
+                } else if (i < (2*max/3) - (grad/2)) {
+                    // Fourth sixth: g=255
+                    g = 255;
+                } else if (i < (2*max/3) + (grad/2)) {
+                    // Transition to fifth sixth (255 to 0)
+                    temp = i - ((2*max/3) - (grad/2));
+                    g = 255 - ((temp * 255) / grad);
+                } else {
+                    // Fifth and sixth sixth: g=0
+                    g = 0;
+                }
+                
+
+
+               // blue
+                if (i < (grad/2)) {
+                    // Initial fade from 255 to 0
+                    temp = (grad/2) - i;
+                    b = (temp * 255) / grad;
+                } else if (i < (2*max/3) - (grad/2)) {
+                    // First two thirds: b=0
+                    b = 0;
+                } else if (i < (2*max/3) + (grad/2)) {
+                    // Transition to last third (0 to 255)
+                    temp = i - ((2*max/3) - (grad/2));
+                    b = (temp * 255) / grad;
+                } else {
+                    // Last third: b=255
+                    b = 255;
+                }
+                
+    
+                if (r > 255) r = 255;
+                if (r < 0) r = 0;
+
+                if (g > 255) g = 255;
+                if (g < 0) g = 0;
+
+                if (b > 255) b = 255;
+                if (b < 0) b = 0;
+
+                /*
+                if (i < (max/6)-64) {
+                    g = 0;
+                } else if (i < (max/6)) {
+                    temp = i-(max/6)-64; // 0-64
+                    g = temp*4;
+                } else if (i < (max - (max / 6) - 64)) {
+                    g = 255;
+                } else if (i < (max - (max / 6))) {
+                    temp = i - (max - (max / 6)) - 64; // 0-64
+                    g = 255 - (temp * 4);
+                } else {
+                    g = 0;
+                }
+
+                
+
+
+                if (i < (max * 2/3) - 64) {
+                    b = 0;
+                } else if (i > (max * 2/3)) {
+                    b = 255;
+                } else {
+                    temp = i - (max * 2/3) - 64; // 0-64
+                    b = temp*4;
+                }
+                */
+
+                //r = r / 2;
+                //g = g / 2;
+                //b = b / 2;
+
+                strip_set_pixel_rgb(strip, i, r, g, b);
+            }
+
+            strip->buffer_dirty = true;
+            strip_refresh(strip);
+            vTaskDelay(100 / portTICK_PERIOD_MS);
         }
 }
 
@@ -413,4 +551,69 @@ void strip_chase_task(void *arg) {
             perf_stop(&perf);
             vTaskDelay(10 / portTICK_PERIOD_MS);
         }
+}
+
+void strip_rainbow_task(void *arg) {
+    LOG("strip_rainbow_task()");
+    strip_t *strip = (strip_t *)arg;
+
+    int grad = 32;  // Transition length
+    int temp = 0;
+    int max = LED_LENGTH_1;
+    int section = max / 6;  // Length of each color section
+
+    // Define ROYGBV colors (Red, Orange, Yellow, Green, Blue, Violet)
+    const uint8_t colors[7][3] = {
+        {255, 0, 0},      // Red (wraps back to this)
+        {255, 127, 0},    // Orange
+        {255, 255, 0},    // Yellow
+        {0, 255, 0},      // Green
+        {0, 0, 255},      // Blue
+        {148, 0, 211},    // Violet
+        {255, 0, 0}       // Red (for final transition)
+    };
+
+    while (true) {
+        for (int i = 0; i < max; i++) {
+            int section_num = (i / section);
+            int section_pos = i % section;
+            
+            // Handle the transition regions
+            if (section_pos >= (section - grad/2) || section_pos < grad/2) {
+                // Calculate position in transition
+                int trans_pos;
+                const uint8_t *color1;
+                const uint8_t *color2;
+                
+                if (section_pos >= (section - grad/2)) {
+                    // Transition to next color
+                    trans_pos = section_pos - (section - grad/2);
+                    color1 = colors[section_num];
+                    color2 = colors[section_num + 1];
+                } else {
+                    // Transition from previous color
+                    trans_pos = section_pos + grad/2;
+                    color1 = colors[section_num];
+                    color2 = colors[section_num];
+                }
+
+                // Calculate transitional colors
+                uint8_t r = color1[0] + ((color2[0] - color1[0]) * trans_pos / grad);
+                uint8_t g = color1[1] + ((color2[1] - color1[1]) * trans_pos / grad);
+                uint8_t b = color1[2] + ((color2[2] - color1[2]) * trans_pos / grad);
+                
+                strip_set_pixel_rgb(strip, i, r, g, b);
+            } else {
+                // Solid color regions
+                strip_set_pixel_rgb(strip, i, 
+                    colors[section_num][0],
+                    colors[section_num][1],
+                    colors[section_num][2]);
+            }
+        }
+
+        strip->buffer_dirty = true;
+        strip_refresh(strip);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+    }
 }

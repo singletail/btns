@@ -7,8 +7,8 @@ void init() {
     if (strip_main) {
         INFO("creating task");
         xTaskCreate(
-            strip_cycle_task,       // Task function
-            "strip_cycle_task",     // Name
+            strip_rainbow_task,       // Task function
+            "strip_rainbow_task",     // Name
             4096,                  // Stack size
             (void *)strip_main,    // Parameter to pass (cast to void*)
             5,                     // Priority

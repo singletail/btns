@@ -11,7 +11,8 @@
 #define BIT_HA_READY     BIT7
 #define BIT_NET_OK       BIT8
 
-#define PIN_LED_1 48 // 21
-#define LED_LENGTH_1 1
+// #define PIN_LED_1 48 // longboi onboard
+#define PIN_LED_1 42
+#define LED_LENGTH_1 800
 
 #endif
