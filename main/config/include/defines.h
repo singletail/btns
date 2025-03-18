@@ -12,7 +12,29 @@
 #define BIT_NET_OK       BIT8
 
 // #define PIN_LED_1 48 // longboi onboard
-#define PIN_LED_1 42
-#define LED_LENGTH_1 800
+
+// # longboi
+// #define PIN_LED_1 42
+//#define LED_LENGTH_1 800
+
+#define PIN_LED_1 9
+#define LED_LENGTH_1 46
+
+#define PIN_LED_2 8
+#define LED_LENGTH_2 46
+
+#define PIN_LED_3 7
+#define LED_LENGTH_3 46
+
+
+// #define PIN_LED_2 43
+// #define LED_LENGTH_2 80
+
+// #define PIN_SEG7_CLK 4
+// #define PIN_SEG7_DIO 5
+
+// #define ENABLE_WIFI
+
+
 
 #endif

@@ -7,8 +7,9 @@
 
 typedef enum
 {
-    STRIP_TYPE_MAIN,
-    STRIP_TYPE_STATUS,
+    STRIP_IDX_1,
+    STRIP_IDX_2,
+    STRIP_IDX_3,
 } strip_type_t;
 
 typedef struct {
