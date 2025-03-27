@@ -9,6 +9,7 @@
     "board/esp32s3-builtin.cfg"
   ],
   "files.associations": {
-    "seg7.h": "c"
+    "seg7.h": "c",
+    "ws2812.h": "c"
   }
 }

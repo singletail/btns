@@ -1,3 +1,5 @@
+/*
+
 #ifndef _ENCODER_H
 #define _ENCODER_H
 
@@ -14,3 +16,5 @@ typedef struct {
 esp_err_t encoder_new(rmt_encoder_handle_t *ret_encoder);
 
 #endif
+
+*/

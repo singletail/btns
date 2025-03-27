@@ -55,46 +55,48 @@ static void clock_task(void *arg) {
 }
 #endif
 
+#define NUM_LEDS 46
+
+static rmt_channel_handle_t create_rmt_channel(gpio_num_t gpio) {
+    rmt_tx_channel_config_t cfg = {
+        .clk_src = RMT_CLK_SRC_DEFAULT,
+        .gpio_num = gpio,
+        .mem_block_symbols = 64,
+        .resolution_hz = 10000000,
+        .trans_queue_depth = 4,
+        .flags.with_dma = true
+    };
+
+    rmt_channel_handle_t channel = NULL;
+    ESP_ERROR_CHECK(rmt_new_tx_channel(&cfg, &channel));
+    ESP_ERROR_CHECK(rmt_enable(channel));
+    return channel;
+}
+
+
 void init() {
     INFO("init()");
+    led_strip_t strip1, strip2, strip3;
 
-    // Create and initialize strip 1
-    strip_t *strip_1 = strip_create(PIN_LED_1, LED_LENGTH_1, true, STRIP_IDX_1);
-    if (!strip_1) {
-        ERR("Failed to create strip 1");
-        return;
+    rmt_channel_handle_t ch0 = create_rmt_channel(PIN_LED_1);
+    rmt_channel_handle_t ch1 = create_rmt_channel(PIN_LED_2);
+    rmt_channel_handle_t ch2 = create_rmt_channel(PIN_LED_3);
+
+    ESP_ERROR_CHECK(led_strip_init(&strip1, GPIO_NUM_2, ch0, NUM_LEDS));
+    ESP_ERROR_CHECK(led_strip_init(&strip2, GPIO_NUM_3, ch1, NUM_LEDS));
+    ESP_ERROR_CHECK(led_strip_init(&strip3, GPIO_NUM_4, ch2, NUM_LEDS));
+
+    for (int i = 0; i < NUM_LEDS; i++) {
+        led_strip_set_pixel(&strip1, i, 255, 0, 0); // red
+        led_strip_set_pixel(&strip2, i, 0, 255, 0); // green
+        led_strip_set_pixel(&strip3, i, 0, 0, 255); // blue
     }
-    strip_enable(strip_1);
-    strip_set_all_rgb(strip_1, 255, 0, 0);  // Red
-    strip_refresh(strip_1);
-    LOG("strip 1 initialized");
 
-    // Create and initialize strip 2
-    strip_t *strip_2 = strip_create(PIN_LED_2, LED_LENGTH_2, true, STRIP_IDX_2);
-    if (!strip_2) {
-        ERR("Failed to create strip 2");
-        return;
-    }
-    strip_enable(strip_2);
-    strip_set_all_rgb(strip_2, 0, 255, 0);  // Green
-    strip_refresh(strip_2);
-    LOG("strip 2 initialized");
+    led_strip_draw(&strip1);
+    led_strip_draw(&strip2);
+    led_strip_draw(&strip3);
 
-    // Create and initialize strip 3
-    strip_t *strip_3 = strip_create(PIN_LED_3, LED_LENGTH_3, true, STRIP_IDX_3);
-    if (!strip_3) {
-        ERR("Failed to create strip 3");
-        return;
-    }
-    strip_enable(strip_3);
-    strip_set_all_rgb(strip_3, 0, 0, 255);  // Blue
-    strip_refresh(strip_3);
-    LOG("strip 3 initialized");
 
-    // Optional: Create tasks for animations
-    xTaskCreate(strip_rainbow_task, "rainbow1", 4096, strip_1, 5, NULL);
-    xTaskCreate(strip_wave_task, "wave2", 4096, strip_2, 5, NULL);
-    xTaskCreate(strip_color_task, "color3", 4096, strip_3, 5, NULL);
 
 #ifdef PIN_SEG7_CLK
     xTaskCreate(clock_task, "clock", 2048, NULL, 2, NULL);

@@ -1,3 +1,4 @@
+/*
 
 #include "encoder.h"
 
@@ -48,11 +49,10 @@ out:
     return encoded_symbols;
 }
 
+static rmt_encoder_handle_t shared_encoder = NULL;
+
 static esp_err_t encoder_del(rmt_encoder_t *encoder) {
-    encoder_obj_t *led_encoder = __containerof(encoder, encoder_obj_t, base);
-    rmt_del_encoder(led_encoder->bytes_encoder);
-    rmt_del_encoder(led_encoder->copy_encoder);
-    free(led_encoder);
+    // Don't delete if other strips are still using it
     return ESP_OK;
 }
 
@@ -65,41 +65,53 @@ static esp_err_t encoder_reset(rmt_encoder_t *encoder) {
 }
 
 esp_err_t encoder_new(rmt_encoder_handle_t *ret_encoder) {
-    encoder_obj_t *led_encoder = NULL;
-    led_encoder = rmt_alloc_encoder_mem(sizeof(encoder_obj_t));
+    // If shared encoder exists, return it
+    if (shared_encoder != NULL) {
+        *ret_encoder = shared_encoder;
+        return ESP_OK;
+    }
+
+    // Create the encoder only once
+    encoder_obj_t *led_encoder = rmt_alloc_encoder_mem(sizeof(encoder_obj_t));
     led_encoder->base.encode = encoder_encode;
     led_encoder->base.del = encoder_del;
     led_encoder->base.reset = encoder_reset;
 
+    // Use minimal memory configurations
     rmt_bytes_encoder_config_t bytes_encoder_config = {
-        .bit0 =
-            {
-                .level0 = 1,
-                .duration0 = 0.35 * TICK_TO_US,    // 28 ticks
-                .level1 = 0,
-                .duration1 = 0.80 * TICK_TO_US,    // 64 ticks
-            },
-        .bit1 =
-            {
-                .level0 = 1,
-                .duration0 = 0.70 * TICK_TO_US,    // 56 ticks
-                .level1 = 0,
-                .duration1 = 0.60 * TICK_TO_US,    // 48 ticks
-            },
-        .flags.msb_first = 1};
+        .bit0 = {
+            .level0 = 1,
+            .duration0 = 0.35 * TICK_TO_US,
+            .level1 = 0,
+            .duration1 = 0.80 * TICK_TO_US,
+        },
+        .bit1 = {
+            .level0 = 1,
+            .duration0 = 0.70 * TICK_TO_US,
+            .level1 = 0,
+            .duration1 = 0.60 * TICK_TO_US,
+        },
+        .flags.msb_first = 1
+    };
 
     rmt_new_bytes_encoder(&bytes_encoder_config, &led_encoder->bytes_encoder);
+    
+    // Use minimal copy encoder configuration
     rmt_copy_encoder_config_t copy_encoder_config = {};
     rmt_new_copy_encoder(&copy_encoder_config, &led_encoder->copy_encoder);
 
-    uint32_t reset_ticks = 50 * TICK_TO_US / 2;
+    // Use minimal reset code
+    uint32_t reset_ticks = 40 * TICK_TO_US / 2;  // Reduced duration
     led_encoder->reset_code = (rmt_symbol_word_t){
         .level0 = 0,
         .duration0 = reset_ticks,
         .level1 = 0,
         .duration1 = reset_ticks,
     };
-    *ret_encoder = &led_encoder->base;
+    
+    shared_encoder = &led_encoder->base;
+    *ret_encoder = shared_encoder;
     return ESP_OK;
 }
 
+*/

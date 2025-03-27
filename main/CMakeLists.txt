@@ -16,8 +16,7 @@ idf_component_register(
         "net/src/ntp.c"
         "net/src/ha.c"
         "core/src/perf.c"
-        "device/src/strip.c"
-        "device/src/encoder.c"
+        "device/src/ws2812.c"
         "device/src/seg7.c"
         "device/src/mmwave.c"
     INCLUDE_DIRS

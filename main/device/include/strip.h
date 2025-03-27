@@ -1,3 +1,5 @@
+/*
+
 #ifndef _STRIP_H
 #define _STRIP_H
 
@@ -57,3 +59,4 @@ void strip_color_task(void *arg);
 void strip_rainbow_task(void *arg);
 
 #endif  
+*/
