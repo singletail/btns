@@ -2,6 +2,17 @@
 #include "seg7.h"
 #include "ntp.h"
 
+/*
+void print_rmt_status(void) {
+    INFO("RMT Channel Status:");
+    for (int i = 0; i < SOC_RMT_CHANNELS_PER_GROUP; i++) {
+        INFO("Channel %d: %s", i, 
+            rmt_acquire_tx_channel(i) == ESP_OK ? "free" : "in use");
+        rmt_release_tx_channel(i);
+    }
+}
+*/
+
 
 #ifdef PIN_SEG7_CLK
 static void clock_task(void *arg) {
@@ -57,46 +68,29 @@ static void clock_task(void *arg) {
 
 #define NUM_LEDS 46
 
-static rmt_channel_handle_t create_rmt_channel(gpio_num_t gpio) {
-    rmt_tx_channel_config_t cfg = {
-        .clk_src = RMT_CLK_SRC_DEFAULT,
-        .gpio_num = gpio,
-        .mem_block_symbols = 64,
-        .resolution_hz = 10000000,
-        .trans_queue_depth = 4,
-        .flags.with_dma = true
-    };
-
-    rmt_channel_handle_t channel = NULL;
-    ESP_ERROR_CHECK(rmt_new_tx_channel(&cfg, &channel));
-    ESP_ERROR_CHECK(rmt_enable(channel));
-    return channel;
-}
 
 
 void init() {
     INFO("init()");
-    led_strip_t strip1, strip2, strip3;
 
-    rmt_channel_handle_t ch0 = create_rmt_channel(PIN_LED_1);
-    rmt_channel_handle_t ch1 = create_rmt_channel(PIN_LED_2);
-    rmt_channel_handle_t ch2 = create_rmt_channel(PIN_LED_3);
+    strip_t *strip1 = ws2812_strip_create(9, 46);
+    strip_t *strip2 = ws2812_strip_create(8, 46);
+    // strip_t *strip3 = ws2812_strip_create(7, 46);
 
-    ESP_ERROR_CHECK(led_strip_init(&strip1, GPIO_NUM_2, ch0, NUM_LEDS));
-    ESP_ERROR_CHECK(led_strip_init(&strip2, GPIO_NUM_3, ch1, NUM_LEDS));
-    ESP_ERROR_CHECK(led_strip_init(&strip3, GPIO_NUM_4, ch2, NUM_LEDS));
-
-    for (int i = 0; i < NUM_LEDS; i++) {
-        led_strip_set_pixel(&strip1, i, 255, 0, 0); // red
-        led_strip_set_pixel(&strip2, i, 0, 255, 0); // green
-        led_strip_set_pixel(&strip3, i, 0, 0, 255); // blue
+    if (!strip1) {
+        ERR("Failed to create strip");
+        return;
     }
 
-    led_strip_draw(&strip1);
-    led_strip_draw(&strip2);
-    led_strip_draw(&strip3);
+    for (int i = 0; i < NUM_LEDS; i++) {
+        ws2812_set_pixel(strip1, i, 0, 0, 255);
+        ws2812_set_pixel(strip2, i, 0, 255, 0);
+        // ws2812_set_pixel(strip3, i, 255, 0, 0);
+    }
 
-
+    ws2812_update(strip1);
+    ws2812_update(strip2);
+    // ws2812_update(strip3);
 
 #ifdef PIN_SEG7_CLK
     xTaskCreate(clock_task, "clock", 2048, NULL, 2, NULL);

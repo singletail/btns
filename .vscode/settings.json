@@ -10,6 +10,7 @@
   ],
   "files.associations": {
     "seg7.h": "c",
-    "ws2812.h": "c"
+    "ws2812.h": "c",
+    "rmt_encoder.h": "c"
   }
 }
