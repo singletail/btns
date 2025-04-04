@@ -26,6 +26,8 @@
 #define PIN_LED_3 7
 #define LED_LENGTH_3 46
 
+#define CONFIG_RMT_ENABLE_DEBUG_LOG 1
+
 
 // #define PIN_LED_2 43
 // #define LED_LENGTH_2 80
@@ -34,7 +36,6 @@
 // #define PIN_SEG7_DIO 5
 
 // #define ENABLE_WIFI
-
 
 
 #endif

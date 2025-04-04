@@ -1,162 +1,100 @@
 #include "ws2812.h"
-#include "driver/rmt_encoder.h"
+#include <stdio.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "driver/rmt_tx.h"
+#include "driver/gpio.h"
+#include "esp_log.h"
 
-#define RMT_RESOLUTION_HZ 10000000 // 10 MHz = 100 ns
-#define T0H 350
-#define T0L 800
-#define T1H 700
-#define T1L 600
+static const char *TAG = "ws2812_rmt";
 
-static rmt_encoder_handle_t ws2812_encoder = NULL;
 
-static esp_err_t ws2812_create_encoder(rmt_encoder_handle_t *ret_encoder) {
-    INFO("ws2812_create_encoder()");
-    rmt_bytes_encoder_config_t config = {
-        .bit0 = {
-            .level0 = 1,
-            .duration0 = T0H / 100,
-            .level1 = 0,
-            .duration1 = T0L / 100
-        },
-        .bit1 = {
-            .level0 = 1,
-            .duration0 = T1H / 100,
-            .level1 = 0,
-            .duration1 = T1L / 100
-        }
-    };
-    return rmt_new_bytes_encoder(&config, ret_encoder);
+//   WORKING BUT NOT IDEAL -- KEEP FOR REFERENCE
+
+#define NUM_CHANNELS 4
+#define NUM_LEDS_PER_STRIP 46
+#define RMT_CLK_HZ 10 * 1000 * 1000  // 10 MHz = 100ns resolution
+#define WS2812_RESET_US 50
+
+typedef struct {
+    rmt_channel_handle_t channel;
+    rmt_encoder_handle_t encoder;
+    gpio_num_t gpio;
+} led_strip_t;
+
+static led_strip_t strips[NUM_CHANNELS] = {
+    { .gpio = GPIO_NUM_4 },
+    { .gpio = GPIO_NUM_5 },
+    { .gpio = GPIO_NUM_6 },
+    { .gpio = GPIO_NUM_48 },
+};
+
+
+static void init_strips()
+{
+    for (int i = 0; i < NUM_CHANNELS; i++) {
+        ESP_LOGI(TAG, "Initializing strip %d on GPIO %d", i, strips[i].gpio);
+
+        // 1. Allocate RMT TX channel
+        rmt_tx_channel_config_t tx_config = {
+            .clk_src = RMT_CLK_SRC_DEFAULT,
+            .gpio_num = strips[i].gpio,
+            .mem_block_symbols = 48,
+            .resolution_hz = RMT_CLK_HZ,
+            .trans_queue_depth = 4,
+            .flags.with_dma = false
+        };
+        ESP_ERROR_CHECK(rmt_new_tx_channel(&tx_config, &strips[i].channel));
+
+        // 2. Create bytes encoder for WS2812 protocol
+        rmt_bytes_encoder_config_t encoder_config = {
+            .bit0 = {
+                .duration0 = 3, .level0 = 1,  // T0H = 300ns
+                .duration1 = 9, .level1 = 0   // T0L = 900ns
+            },
+            .bit1 = {
+                .duration0 = 8, .level0 = 1,  // T1H = 800ns
+                .duration1 = 4, .level1 = 0   // T1L = 400ns
+            },
+            .flags.msb_first = 1
+        };
+        ESP_ERROR_CHECK(rmt_new_bytes_encoder(&encoder_config, &strips[i].encoder));
+
+        // 3. Enable TX channel
+        ESP_ERROR_CHECK(rmt_enable(strips[i].channel));
+    }
 }
 
+static void send_color(led_strip_t *strip, uint8_t red, uint8_t green, uint8_t blue)
+{
+    uint8_t grb[3] = { green, red, blue };
 
-
-// Initialize encoder
-esp_err_t ws2812_encoder_init(void) {
-    INFO("ws2812_encoder_init()");
-    if (ws2812_encoder != NULL) {
-        WARN("Encoder already exists");
-        return ESP_OK;  // Already initialized
-    }
-    
-    // WS2812B timing
-    return ws2812_create_encoder(&ws2812_encoder);
-}
-
-// Create a strip
-strip_t* ws2812_strip_create(gpio_num_t pin, uint16_t length) {
-    strip_t *strip = calloc(1, sizeof(strip_t));
-    if (!strip) return NULL;
-    
-    strip->pin = pin;
-    strip->length = length;
-    strip->buffer = calloc(length * 3, sizeof(uint8_t));
-    if (!strip->buffer) {
-        free(strip);
-        return NULL;
-    }
-    
-    // Ensure encoder is initialized
-    if (ws2812_encoder_init() != ESP_OK) {
-        free(strip->buffer);
-        free(strip);
-        return NULL;
-    }
-    
-    // Configure minimal RMT channel for DMA
-    rmt_tx_channel_config_t tx_config = {
-        .clk_src = RMT_CLK_SRC_APB,  // 80MHz clock
-        .gpio_num = pin,
-        .mem_block_symbols = 64,      // Minimal memory blocks
-        .resolution_hz = 10000000,    // 10MHz resolution (0.1μs precision)
-        .trans_queue_depth = 4,       // Small queue
-        .flags.invert_out = false,
-        .flags.with_dma = false
-    };
-    
-    INFO("Creating RMT channel for pin %d", pin);
-
-    esp_err_t ret = rmt_new_tx_channel(&tx_config, &strip->channel);
-    if (ret != ESP_OK) {
-        INFO("Failed to create RMT channel: %s", esp_err_to_name(ret));
-        free(strip->buffer);
-        free(strip);
-        return NULL;
-    }
-    INFO("RMT channel created successfully");
-    return strip;
-}
-
-// Set RGB for a single LED
-void ws2812_set_pixel(strip_t *strip, uint16_t index, uint8_t r, uint8_t g, uint8_t b) {
-    if (index >= strip->length) return;
-    
-    // WS2812B expects GRB order
-    uint16_t start = index * 3;
-    strip->buffer[start] = g;
-    strip->buffer[start + 1] = r;
-    strip->buffer[start + 2] = b;
-}
-
-// Update strip with current buffer
-esp_err_t ws2812_update(strip_t *strip) {
-    if (!strip->enabled) {
-        rmt_enable(strip->channel);
-        strip->enabled = true;
-    }
-    
     rmt_transmit_config_t tx_config = {
-        .loop_count = 0
-    };
-    
-    return rmt_transmit(strip->channel, ws2812_encoder, 
-                        strip->buffer, strip->length * 3, &tx_config);
-}
-
-void ws2812_strip_delete(strip_t *strip) {
-    if (!strip) return;
-    
-    if (strip->enabled) {
-        rmt_disable(strip->channel);
-    }
-    
-    rmt_del_channel(strip->channel);
-    free(strip->buffer);
-    free(strip);
-}
-
-/*
-#include <stdlib.h>
-#include <string.h>
-
-
-
-
-
-esp_err_t led_strip_init(led_strip_t *strip, gpio_num_t gpio, rmt_channel_handle_t channel, uint32_t num_leds) {
-    strip->gpio = gpio;
-    strip->channel = channel;
-    strip->num_leds = num_leds;
-    strip->buffer = calloc(num_leds * 3, sizeof(uint8_t)); // GRB format
-
-    ESP_ERROR_CHECK(ws2812_create_encoder(&strip->encoder));
-    return ESP_OK;
-}
-
-void led_strip_set_pixel(led_strip_t *strip, uint32_t index, uint8_t r, uint8_t g, uint8_t b) {
-    if (index >= strip->num_leds) return;
-    uint8_t *p = &strip->buffer[index * 3];
-    p[0] = g;
-    p[1] = r;
-    p[2] = b;
-}
-
-esp_err_t led_strip_draw(led_strip_t *strip) {
-    rmt_transmit_config_t tx_cfg = {
         .loop_count = 0,
-        .flags.eot_level = 0
+        .flags.eot_level = 0, // WS2812 requires low at end
     };
 
-    ESP_ERROR_CHECK(rmt_transmit(strip->channel, strip->encoder, strip->buffer, strip->num_leds * 3, &tx_cfg));
-    return rmt_tx_wait_all_done(strip->channel, portMAX_DELAY);
+    ESP_ERROR_CHECK(rmt_transmit(strip->channel, strip->encoder, grb, sizeof(grb), &tx_config));
+    ESP_ERROR_CHECK(rmt_tx_wait_all_done(strip->channel, pdMS_TO_TICKS(100)));
+
+    // WS2812 reset: low for at least 50us
+    ets_delay_us(WS2812_RESET_US);
 }
-*/
+
+void test_strips(void)
+{
+    INFO("calling init_strips()");
+    init_strips();
+
+    INFO("calling send_color()");
+    while (1) {
+        for (int i = 0; i < NUM_CHANNELS; i++) {
+            // Display red on GPIO2, green on GPIO3, blue on GPIO4
+            send_color(&strips[i],
+                0x10 * (i == 0),
+                0x10 * (i == 1),
+                0x10 * (i == 2));
+        }
+        vTaskDelay(pdMS_TO_TICKS(500));
+    }
+}

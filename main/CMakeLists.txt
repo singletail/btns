@@ -16,7 +16,8 @@ idf_component_register(
         "net/src/ntp.c"
         "net/src/ha.c"
         "core/src/perf.c"
-        "device/src/ws2812.c"
+        "device/src/encoder.c"
+        "device/src/strip.c"
         "device/src/seg7.c"
         "device/src/mmwave.c"
     INCLUDE_DIRS
@@ -28,10 +29,10 @@ idf_component_register(
     REQUIRES
         nvs_flash
         esp_driver_gpio
+        esp_driver_i2c
         esp_driver_rmt
         esp_netif
         esp_wifi
         lwip
         mqtt
-        esp_driver_i2c
 )

@@ -12,6 +12,8 @@ void app_main(void) {
     #ifdef ENABLE_WIFI
     net_init();
     #endif
+
+    esp_log_level_set("rmt", ESP_LOG_DEBUG);
     
     init();
 }

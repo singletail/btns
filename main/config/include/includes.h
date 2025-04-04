@@ -43,6 +43,8 @@
 #include "driver/rmt_types.h"
 #include "driver/i2c_master.h"
 #include "soc/clk_tree_defs.h"
-#include "ws2812.h"
+
+#include "strip.h"
+#include "encoder.h"
 
 #endif

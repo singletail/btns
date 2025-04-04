@@ -2,16 +2,10 @@
 #include "seg7.h"
 #include "ntp.h"
 
-/*
-void print_rmt_status(void) {
-    INFO("RMT Channel Status:");
-    for (int i = 0; i < SOC_RMT_CHANNELS_PER_GROUP; i++) {
-        INFO("Channel %d: %s", i, 
-            rmt_acquire_tx_channel(i) == ESP_OK ? "free" : "in use");
-        rmt_release_tx_channel(i);
-    }
-}
-*/
+
+#define LED_PIN_1 43
+#define LED_PIN_2 6
+#define LED_PIN_3 5
 
 
 #ifdef PIN_SEG7_CLK
@@ -66,33 +60,64 @@ static void clock_task(void *arg) {
 }
 #endif
 
-#define NUM_LEDS 46
-
-
-
 void init() {
     INFO("init()");
-
-    strip_t *strip1 = ws2812_strip_create(9, 46);
-    strip_t *strip2 = ws2812_strip_create(8, 46);
-    // strip_t *strip3 = ws2812_strip_create(7, 46);
-
-    if (!strip1) {
-        ERR("Failed to create strip");
-        return;
-    }
-
-    for (int i = 0; i < NUM_LEDS; i++) {
-        ws2812_set_pixel(strip1, i, 0, 0, 255);
-        ws2812_set_pixel(strip2, i, 0, 255, 0);
-        // ws2812_set_pixel(strip3, i, 255, 0, 0);
-    }
-
-    ws2812_update(strip1);
-    ws2812_update(strip2);
-    // ws2812_update(strip3);
 
 #ifdef PIN_SEG7_CLK
     xTaskCreate(clock_task, "clock", 2048, NULL, 2, NULL);
 #endif
+
+   strip_t *strip = strip_create(0, LED_PIN_1, 46, false);
+   strip_t *strip_2 = strip_create(1, LED_PIN_2, 46, false);
+   strip_t *strip_3 = strip_create(2, LED_PIN_3, 46, false);
+   rmt_enable(strip->channel);
+   rmt_enable(strip_2->channel);
+   rmt_enable(strip_3->channel);
+
+   const int spacing = 6;  // Fixed spacing between bright LEDs
+   int offset = 0;        // Position offset for movement
+
+    while (1) {
+        // First set all LEDs to dim
+        strip_set_all_rgb(strip, 64, 0, 0);
+        strip_set_all_rgb(strip_2, 64, 0, 64);
+        strip_set_all_rgb(strip_3, 0, 0, 64);
+
+        // Then set every 6th LED bright, shifted by offset
+        for (int i = 0; i < 46; i++) {
+                if ((i + offset) % spacing == 0) {
+                    strip_set_pixel_rgb(strip, i, 255, 0, 0);
+                    strip_set_pixel_rgb(strip_2, i, 255, 0, 255);
+                    strip_set_pixel_rgb(strip_3, i, 0, 0, 255);
+            }
+        }
+
+        strip_refresh(strip);
+        strip_refresh(strip_2);
+        strip_refresh(strip_3);
+
+        // Move pattern one position
+        offset = (offset - 1);
+        if (offset < 0) {
+            offset = spacing - 1;
+        }
+        
+        vTaskDelay(pdMS_TO_TICKS(50));
+    }
+
+
+    INFO("Done.");
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -1,5 +1,9 @@
 #pragma once
+#include "includes.h"
 
+void test_strips(void);
+void print_rmt_status(void);
+/*
 #include "includes.h"
 #include "driver/rmt_tx.h"
 #include "esp_err.h"
@@ -19,3 +23,4 @@ void ws2812_set_pixel(strip_t *strip, uint16_t index, uint8_t r, uint8_t g, uint
 esp_err_t ws2812_update(strip_t *strip);
 void ws2812_strip_delete(strip_t *strip);
 
+*/
