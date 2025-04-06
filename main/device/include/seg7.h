@@ -26,4 +26,6 @@ void seg7_clear(seg7_t *dev);
 void seg7_display_digit(seg7_t *dev, uint8_t position, uint8_t digit);
 void seg7_display_number(seg7_t *dev, int16_t number);
 
+void clock_task(void *arg);
+
 #endif

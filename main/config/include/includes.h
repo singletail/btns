@@ -44,7 +44,10 @@
 #include "driver/i2c_master.h"
 #include "soc/clk_tree_defs.h"
 
-#include "strip.h"
+#include "seg7.h"
 #include "encoder.h"
+#include "strip.h"
+#include "grid.h"
+#include "leds.h"
 
 #endif

@@ -20,6 +20,8 @@ idf_component_register(
         "device/src/strip.c"
         "device/src/seg7.c"
         "device/src/mmwave.c"
+        "device/src/leds.c"
+        "device/src/grid.c"
     INCLUDE_DIRS
         "util/include"
         "config/include"
