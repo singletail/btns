@@ -1,16 +1,11 @@
-/*
-
 #include "grid.h"
-#include "strip.h"
-#include "esp_log.h"
-#include "esp_timer.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include <string.h>
-#include <math.h>
-
-// Define TAG for logging
-static const char *TAG = "grid";
+// #include "strip.h"
+// #include "esp_log.h"
+// #include "esp_timer.h"
+// #include "freertos/FreeRTOS.h"
+// #include "freertos/task.h"
+// #include <string.h>
+// #include <math.h>
 
 // Global grid object
 static grid_t *g_grid = NULL;
@@ -219,10 +214,6 @@ static const font_t default_font = {
     .height = 7,
     .data = font_5x7
 };
-
-void grid_init(void) {
-    INFO("grid_init()");
-}
 
 // Create a grid object
 grid_t *grid_create(strip_t *strip, uint32_t width, uint32_t height, bool serpentine) {
@@ -496,4 +487,3 @@ esp_err_t grid_scroll_text(grid_t *grid, const char *text, const font_t *font, c
     return ESP_OK;
 }
 
-*/

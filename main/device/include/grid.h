@@ -1,14 +1,7 @@
 #ifndef GRID_H
 #define GRID_H
 
-/*
-#include <stdint.h>
-#include <stdbool.h>
-#include "esp_err.h"
-#include "esp_log.h"
-
-// Forward declaration to break circular dependency
-typedef struct strip_t strip_t;
+#include "strip.h"
 
 // Grid dimensions
 #define GRID_WIDTH 64
@@ -37,8 +30,6 @@ typedef struct {
     const uint8_t *data;  // Bitmap data for the font
 } font_t;
 
-// Initialize the grid
-void grid_init(void);
 
 // Create a grid object
 grid_t *grid_create(strip_t *strip, uint32_t width, uint32_t height, bool serpentine);
@@ -78,5 +69,5 @@ esp_err_t grid_refresh(grid_t *grid);
 
 // Animation helpers
 esp_err_t grid_scroll_text(grid_t *grid, const char *text, const font_t *font, color_t color, int16_t start_y, int16_t speed);
-*/
+
 #endif

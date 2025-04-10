@@ -47,7 +47,7 @@
 #include "seg7.h"
 #include "encoder.h"
 #include "strip.h"
-#include "grid.h"
+// #include "grid.h"
 #include "leds.h"
 
 #endif
