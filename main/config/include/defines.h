@@ -15,27 +15,37 @@
 
 #define CONFIG_RMT_ENABLE_DEBUG_LOG 1
 
-#define PIN_SEG7_CLK 4
-#define PIN_SEG7_DIO 5
+// #define PIN_SEG7_CLK 4
+// #define PIN_SEG7_DIO 5
+
+
+#define STRIP_NUM_STRIPS 3
 
 // Wearable
-// #define LED_PIN_1 43
-// #define LED_PIN_2 6
-// #define LED_PIN_3 5
+/*
+#define STRIP_PIN_1 43
+#define STRIP_PIN_2 6
+#define STRIP_PIN_3 5
+*/
 
-#define STRIP_NUM_STRIPS 1
+#define STRIP_PIN_1 7
+#define STRIP_PIN_2 8
+#define STRIP_PIN_3 9
+
 
 // Longboi
+/*
 #define STRIP_PIN_1 42
 #define STRIP_PIN_2 41
 #define STRIP_PIN_3 40
 #define STRIP_PIN_4 39
+*/
 
-#define STRIP_LENGTH_1 256
-#define STRIP_LENGTH_2 46
-#define STRIP_LENGTH_3 46
-#define STRIP_LENGTH_4 46
+#define STRIP_LENGTH_1 45
+#define STRIP_LENGTH_2 45
+#define STRIP_LENGTH_3 45
+// #define STRIP_LENGTH_4 45
 
-#define ENABLE_WIFI
+// #define ENABLE_WIFI
 
 #endif

@@ -5,6 +5,7 @@ main/config/include/config.h
 # Personal
 docs/ideas
 docs/inventory
+docs/private
 
 # PDFs
 *.pdf

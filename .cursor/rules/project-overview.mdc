@@ -1,0 +1,35 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Project Rules
+
+- This project is for esp32s3 running a custom ESP-IDF v5.4.1 program to do multiple things depending upon the specific build, and which modules are enabled. 
+
+### Some uses are:
+
+- ws2812b-style led strip control
+- Sensors (presence/bio/etc)
+- Home Assistant data delivery and incoming control commands
+- Wearables, including LED strips
+- Playing sound effects based on events
+
+### Some things I want to add are:
+
+- Sound playback from an SD memory card
+- Use as a Star Trek-like bridge control panel.
+- More sensors
+- Deployment on a mesh network
+
+## Notes
+
+- This is currently for personal, prototype use, so it does not necessarily need to conform to commercial-grade standards, but I do strive for high-quality and safety.
+
+- For now, I am testing on a breadboard, then hand-soldering components on perfboard. Perhaps some day I will design a real PCB, but not this week.
+
+- I currently have the wearable prototype board down to a hand-soldered 1" x 1" PCB, including the esp32s3, a 74HCT24, and a "normal" setup for caps on the 5V battery input, proper grounding with resistors, resistors as filters for the LED strips. When discussing wearables specifically, keep pcb space in mind.
+
+## Inventory
+
+See [inventory.md](mdc:/Users/singletail/dev/esp32/notes/inventory.md)

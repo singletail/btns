@@ -1,3 +1,5 @@
+/*
+
 #include "grid.h"
 // #include "strip.h"
 // #include "esp_log.h"
@@ -487,3 +489,4 @@ esp_err_t grid_scroll_text(grid_t *grid, const char *text, const font_t *font, c
     return ESP_OK;
 }
 
+*/

@@ -7,13 +7,12 @@
 #include "soc/gpio_struct.h"
 
 typedef struct {
-    gpio_dev_t *hw;    // Direct hardware access
+    gpio_dev_t *hw;
     gpio_num_t clk;
     gpio_num_t dio;
     uint8_t brightness;
 } seg7_t;
 
-// Core functions
 seg7_t *seg7_new(gpio_num_t clk, gpio_num_t dio);
 void seg7_del(seg7_t *dev);
 
@@ -27,5 +26,6 @@ void seg7_display_digit(seg7_t *dev, uint8_t position, uint8_t digit);
 void seg7_display_number(seg7_t *dev, int16_t number);
 
 void clock_task(void *arg);
+void wargames_task(void *arg);
 
 #endif

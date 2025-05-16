@@ -1,3 +1,5 @@
+/*
+
 #ifndef GRID_H
 #define GRID_H
 
@@ -71,3 +73,5 @@ esp_err_t grid_refresh(grid_t *grid);
 esp_err_t grid_scroll_text(grid_t *grid, const char *text, const font_t *font, color_t color, int16_t start_y, int16_t speed);
 
 #endif
+
+*/

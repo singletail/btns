@@ -19,10 +19,18 @@ const strip_conf_t strip_conf = {
 };
 
 // buffers
+#ifdef STRIP_LENGTH_1
 DMA_ATTR static uint8_t strip_buffer_1[STRIP_LENGTH_1 * STRIP_NUM_COLORS] __attribute__((aligned(16)));
+#endif
+#ifdef STRIP_LENGTH_2
 DMA_ATTR static uint8_t strip_buffer_2[STRIP_LENGTH_2 * STRIP_NUM_COLORS] __attribute__((aligned(16)));
+#endif
+#ifdef STRIP_LENGTH_3
 DMA_ATTR static uint8_t strip_buffer_3[STRIP_LENGTH_3 * STRIP_NUM_COLORS] __attribute__((aligned(16)));
+#endif
+#ifdef STRIP_LENGTH_4
 DMA_ATTR static uint8_t strip_buffer_4[STRIP_LENGTH_4 * STRIP_NUM_COLORS] __attribute__((aligned(16)));
+#endif
 
 static const rmt_transmit_config_t strip_tx_conf = {
     .loop_count = 0,
@@ -238,16 +246,24 @@ strip_t *strip_create(int idx, gpio_num_t pin, uint32_t size, bool dma) {
 
     switch (idx) {
         case 0:
+#ifdef STRIP_LENGTH_1
             strip->buffer = strip_buffer_1;
+#endif
             break;
         case 1:
+#ifdef STRIP_LENGTH_2
             strip->buffer = strip_buffer_2;
+#endif
             break;
         case 2:
+#ifdef STRIP_LENGTH_3
             strip->buffer = strip_buffer_3;
+#endif
             break;
         case 3:
+#ifdef STRIP_LENGTH_4
             strip->buffer = strip_buffer_4;
+#endif
             break;
         default:
             free(strip);

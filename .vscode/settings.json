@@ -14,9 +14,10 @@
     "rmt_encoder.h": "c",
     "rmt_types.h": "c",
     "cstdint": "c",
-    "grid.h": "c"
+    "grid.h": "c",
+    "chrono": "c"
   },
   "idf.espIdfPathWin": "D:\\dev\\esp\\v5.4.1\\esp-idf",
   "idf.toolsPathWin": "D:\\dev\\tools",
-  "idf.pythonInstallPath": "D:\\dev\\tools\\tools\\idf-python\\3.11.2\\python.exe"
+  "idf.pythonInstallPath": "/Library/Developer/CommandLineTools/usr/bin/python"
 }

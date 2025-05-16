@@ -13,28 +13,7 @@
        d
 */
 /*
-static const int8_t seg7_sym[] = {
-    // XGFEDCBA
-    0b00111111, // 0
-    0b00000110, // 1
-    0b01011011, // 2
-    0b01001111, // 3
-    0b01100110, // 4
-    0b01101101, // 5
-    0b01111101, // 6
-    0b00000111, // 7
-    0b01111111, // 8
-    0b01101111, // 9
-    0b01110111, // A
-    0b00111001, // C
-    0b01111001, // E
-    0b01110001, // F
-    0b01110110, // H
-    0b00111000, // L
-    0b01110011, // P
-    0b01101101, // S
-    0b00111110, // U
-};
+
 
 static const int8_t seg7_bits[] = {
     // XGFEDCBA
@@ -197,6 +176,35 @@ static const uint8_t DIGIT_PATTERNS[] = {
     0x6f     // 9: 0b01101111
 };
 
+#ifdef PIN_SEG7_CLK
+
+static const int8_t SEG7_SYM[] = {
+    // XGFEDCBA
+    0b00111111, // 0
+    0b00000110, // 1
+    0b01011011, // 2
+    0b01001111, // 3
+    0b01100110, // 4
+    0b01101101, // 5
+    0b01111101, // 6
+    0b00000111, // 7
+    0b01111111, // 8
+    0b01101111, // 9
+    0b01110111, // A
+    0b00111001, // C
+    0b01111001, // E
+    0b01110001, // F
+    0b01110110, // H
+    0b00111000, // L
+    0b01110011, // P
+    0b01101101, // S
+    0b00111110, // U
+};
+
+
+static const int8_t SEG7_SYM_LEN = sizeof(SEG7_SYM) / sizeof(SEG7_SYM[0]);
+#endif
+
 void seg7_del(seg7_t *dev) {
         if (dev) {
             heap_caps_free(dev);
@@ -204,8 +212,7 @@ void seg7_del(seg7_t *dev) {
 }
 
 void seg7_set_brightness(seg7_t *dev, uint8_t level) {
-    dev->brightness = level & 0x07;    // Ensure 0-7 range
-    // Update display with new brightness
+    dev->brightness = level & 0x07;
     start(dev);
     write_byte(dev, 0x88 | dev->brightness);
     ask(dev);
@@ -213,9 +220,9 @@ void seg7_set_brightness(seg7_t *dev, uint8_t level) {
 }
 
 void seg7_clear(seg7_t *dev) {
-        for (uint8_t i = 0; i < 4; i++) {
-            seg7_display(dev, i, 0x00);
-        }
+    for (uint8_t i = 0; i < 4; i++) {
+        seg7_display(dev, i, 0x00);
+    }
 }
 
 void seg7_display_digit(seg7_t *dev, uint8_t position, uint8_t digit) {
@@ -229,7 +236,6 @@ void seg7_display_number(seg7_t *dev, int16_t number) {
             number = -number;
     }
 
-    // Convert to digits
     uint8_t digits[4] = {0};
     uint8_t pos = 0;
 
@@ -256,7 +262,27 @@ void seg7_display_number(seg7_t *dev, int16_t number) {
         }
 }
 
+void wargames_task(void *arg) {
+#ifdef PIN_SEG7_CLK
+    LOG("wargames_task()");
+    seg7_t *s7_1 = seg7_new(PIN_SEG7_CLK, PIN_SEG7_DIO);
+    seg7_t *s7_2 = seg7_new(PIN_SEG7_CLK, 6);
+    int8_t seg7_rnd = 0;
+
+    while (1) {
+        for (int8_t i = 0; i < 4; i++) {
+            seg7_rnd = SEG7_SYM[rand() % SEG7_SYM_LEN];
+            seg7_display(s7_1, i, seg7_rnd);
+            seg7_rnd = SEG7_SYM[rand() % SEG7_SYM_LEN];
+            seg7_display(s7_2, i, seg7_rnd);
+        }
+        vTaskDelay(pdMS_TO_TICKS(100));
+    }
+#endif
+}
+
 void clock_task(void *arg) {
+#ifdef PIN_SEG7_CLK
     LOG("clock_task()");
     
     // Create 7-segment display instance
@@ -304,4 +330,5 @@ void clock_task(void *arg) {
         // Sleep for ~100ms - short enough to catch time changes but long enough to be efficient
         vTaskDelay(pdMS_TO_TICKS(100));
     }
+#endif
 }
