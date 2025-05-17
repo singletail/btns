@@ -22,16 +22,17 @@
 #define STRIP_NUM_STRIPS 3
 
 // Wearable
-/*
+
 #define STRIP_PIN_1 43
 #define STRIP_PIN_2 6
 #define STRIP_PIN_3 5
-*/
 
+
+/*
 #define STRIP_PIN_1 7
 #define STRIP_PIN_2 8
 #define STRIP_PIN_3 9
-
+*/
 
 // Longboi
 /*
@@ -41,9 +42,9 @@
 #define STRIP_PIN_4 39
 */
 
-#define STRIP_LENGTH_1 45
-#define STRIP_LENGTH_2 45
-#define STRIP_LENGTH_3 45
+#define STRIP_LENGTH_1 44
+#define STRIP_LENGTH_2 44
+#define STRIP_LENGTH_3 44
 // #define STRIP_LENGTH_4 45
 
 // #define ENABLE_WIFI

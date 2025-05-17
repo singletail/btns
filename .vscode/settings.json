@@ -1,7 +1,7 @@
 {
   "C_Cpp.intelliSenseEngine": "default",
   "idf.port": "/dev/tty.usbmodem1101",
-  "idf.portWin": "COM6",
+  "idf.portWin": "COM4",
   "idf.customExtraVars": {
     "IDF_TARGET": "esp32s3"
   },
@@ -19,5 +19,5 @@
   },
   "idf.espIdfPathWin": "D:\\dev\\esp\\v5.4.1\\esp-idf",
   "idf.toolsPathWin": "D:\\dev\\tools",
-  "idf.pythonInstallPath": "/Library/Developer/CommandLineTools/usr/bin/python"
+  "idf.pythonInstallPath": "D:\\dev\\tools\\tools\\idf-python\\3.11.2\\python.exe"
 }
