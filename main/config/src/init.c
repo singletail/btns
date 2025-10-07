@@ -27,7 +27,8 @@ void btn_test(void *arg, btn_event_t event) {
 
 void init() {
     INFO("init()");
-    xTaskCreate(maybe_task, "maybe", 8192, NULL, 2, NULL);
+    //xTaskCreate(maybe_task, "maybe", 8192, NULL, 2, NULL);
+    xTaskCreate(quarterflash_task, "quarterflash", 8192, NULL, 2, NULL);
 
 /*
     // Initialize button module
@@ -52,7 +53,12 @@ void init() {
 */
 
     // Create wargames task
-    // xTaskCreate(wargames_task, "wargames", 2048, NULL, 2, NULL);
+    xTaskCreate(wargames_task, "wargames", 2048, NULL, 2, NULL);
 
+
+    // audio test
+    xTaskCreate(pcm5102_test_task, "pcm5102_test", 4096, NULL, 5, NULL);
+
+    
     INFO("Done.");
 }

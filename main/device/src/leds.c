@@ -993,3 +993,57 @@ void maybe_task(void *arg) {
         vTaskDelay(pdMS_TO_TICKS(40));
     }
 }
+
+void quarterflash_task(void *arg) {
+    INFO("quarterflash_task()");
+    
+    strip_t *strip = strip_create(0, STRIP_PIN_1, STRIP_LENGTH_1, false);
+    rmt_enable(strip->channel);
+    strip_clear(strip);
+    
+    // For 8x32 grid = 256 total pixels
+    const int total_pixels = STRIP_LENGTH_1;
+    const int quarter_pixels = total_pixels / 4;  // 64 pixels
+    
+    // Array to track which pixels are selected
+    bool selected_pixels[STRIP_LENGTH_1] = {false};
+    
+    while (1) {
+        // Clear the strip
+        strip_clear(strip);
+        
+        // Reset selection array
+        for (int i = 0; i < total_pixels; i++) {
+            selected_pixels[i] = false;
+        }
+        
+        // Randomly select quarter of pixels with even distribution
+        int selected_count = 0;
+        while (selected_count < quarter_pixels) {
+            int random_pixel = esp_random() % total_pixels;
+            if (!selected_pixels[random_pixel]) {
+                selected_pixels[random_pixel] = true;
+                selected_count++;
+            }
+        }
+        
+        // Set selected pixels to random red or amber
+        for (int i = 0; i < total_pixels; i++) {
+            if (selected_pixels[i]) {
+                // Random choice between red and amber
+                if (esp_random() % 2) {
+                    strip_set_pixel_rgb(strip, i, 255, 0, 0);      // Red
+                } else {
+                    strip_set_pixel_rgb(strip, i, 255, 128, 0);    // Amber
+                }
+            }
+            // All other pixels remain dark (already cleared)
+        }
+        
+        // Refresh the strip
+        strip_refresh(strip);
+        
+        // Wait 2 seconds
+        vTaskDelay(pdMS_TO_TICKS(200));
+    }
+}

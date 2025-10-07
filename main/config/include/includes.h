@@ -18,6 +18,7 @@
 #include "rom/ets_sys.h"
 
 #include "esp_err.h"
+#include "esp_check.h"
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_system.h"
@@ -43,6 +44,13 @@
 #include "driver/rmt_types.h"
 #include "driver/i2c_master.h"
 #include "soc/clk_tree_defs.h"
+
+#ifdef ENABLE_I2S
+#include "driver/i2s_std.h"
+#include "pcm5102.h"
+#endif
+
+#include "i2s.h"
 
 #include "seg7.h"
 #include "encoder.h"

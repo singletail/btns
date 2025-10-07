@@ -7,6 +7,7 @@ idf_component_register(
         "core/src/nvs.c"
         "core/src/bits.c"
         "core/src/pins.c"
+        "core/src/i2s.c"
         "core/src/sensor.c"
         "util/src/sym.c"
         "util/src/log.c"
@@ -23,6 +24,7 @@ idf_component_register(
         "device/src/strip.c"
         "device/src/leds.c"
         "device/src/grid.c"
+        "device/src/pcm5102.c"
     INCLUDE_DIRS
         "util/include"
         "config/include"
@@ -38,4 +40,5 @@ idf_component_register(
         esp_wifi
         lwip
         mqtt
+        driver
 )

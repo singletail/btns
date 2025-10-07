@@ -26,4 +26,5 @@ void police_alarm_task(void *arg);
 void police_task(void *arg);
 void federal_task(void *arg);
 void maybe_task(void *arg);
+void quarterflash_task(void *arg);
 #endif // LEDS_H

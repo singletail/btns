@@ -69,6 +69,7 @@ void net_wifi_connect(void) {
 }
 
 void net_init(void) {
+    INFO("net_init()");
     bits_wait(BIT_PINS_READY);
     net_init_netif();
     net_wifi_configure();

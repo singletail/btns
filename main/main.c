@@ -9,6 +9,10 @@ void app_main(void) {
     bits_init();
     pins_init();
 
+    #ifdef ENABLE_I2S
+    i2s_init();
+    #endif
+
     #ifdef ENABLE_WIFI
     net_init();
     #endif
